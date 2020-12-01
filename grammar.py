@@ -1,11 +1,20 @@
 from collections import defaultdict
 
 class Grammar():
-
+    """Class represents input grammar. It also parse grammar from txt.
+    """
     def __init__(self, filename):
+        """Constructor which will generate as class prop two dictionaries. Which will represent rules.
+        One will represent nonterminal left side with one nonterimal Z -> XY or Z -> character. On right side can be more then one value.
+
+        Second one will represent opossite approach. XY -> Z. Same as above. XY can be generated with more then one rule. 
+        Args:
+            filename (string): Location of input file. This file will be parse.
+        Raises:
+            ValueError: If smth bad with grammar.
+        """
         self.rightside2left = defaultdict(list)
         self.leftside2right = defaultdict(list)
-
 
         for line in open(filename):
             left, right = line.split("->")
@@ -27,6 +36,10 @@ class Grammar():
 
 
     def __str__(self):
+        """ToString method which shows how grammar looks.
+        Returns:
+            [string]: Grammar.
+        """
         output = ''
         for k,v in self.leftside2right.items():
             right = "|".join(v)
