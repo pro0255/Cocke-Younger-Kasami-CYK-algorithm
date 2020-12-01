@@ -6,15 +6,30 @@ Lets assume that this gramma will be in CNF
 ASSUMED_STARTING_SYMBOL = 'S' 
 
 class Cyk():
+    """Class which represents cyk algorithm in action.
+    """
     def __init__(self, grammar):
+        """Constructor with grammar. Please use grammar class as input.
+        Args:
+            grammar (Grammar): Grammar class.
+        """
         self.grammar = grammar 
         pass
-    
+
     def get_substrings(self, k):
+        """Returns all possible substring of word with length of k.
+        Args:
+            k (int): Length of substring.
+        Returns:
+            [string[]]: All possible substring with length k.
+        """
         return [self.word[i: j] for i in range(len(self.word)) for j in range(i + 1, len(self.word) + 1) if len(self.word[i:j]) == k] 
 
-
     def print_T_row(self, index):
+        """Helper method which prints layer of matrix.
+        Args:
+            index (int): Index of layer.
+        """
         substring_size = index + 1
         print(f'Word {self.word} substrings with size of {substring_size} can get as follows')
         print(f'{self.X2index}')
@@ -27,6 +42,10 @@ class Cyk():
             print(substring_cell)
 
     def init_phase(self, word):
+        """ Method which represents init state. Where is set to 1 all possible approaches which generates substrings with size 1.
+        Args:
+            word (string): Input word.  
+        """
         for index, c in enumerate(word):
             Xs = self.grammar.rightside2left[c]
             # print(f'For characted {c} {Xs}')
@@ -36,6 +55,13 @@ class Cyk():
 
 
     def make_product(self, left, right):
+        """Method which makes product according to two cells in matrix. It also make correct product of values which in most upper layer represents number of derivation trees.
+        Args:
+            left (int[]): One of the cell which was already calculated. Cell movement column up.
+            right (int[]): One of the cell which was already calculated. Cell movement diagonal down. 
+        Returns:
+            [(string, int)[]]: All possible products which was generated with value. This value represents Z += X * Y which was described in text.
+        """
         products = []
         for lI, lValue in enumerate(left):
             for rI, rValue in enumerate(right):
@@ -44,6 +70,10 @@ class Cyk():
         return products
      
     def run(self, word):
+        """Main function which represents dynamic programming. Here are called init phase and make product.
+        Args:
+            word (string): Word w which will be analyzed with bottom top approach.
+        """
         word_size = len(word)
         self.word = word
         X_len = len(self.grammar.leftNonT)
@@ -52,9 +82,9 @@ class Cyk():
 
         #vytvorime pole T[i,j,X], kde X je neterminal
         self.T = np.zeros((word_size, word_size, X_len))
-        #pro kazdy znak na pozici i a pro kazde X urcujici znak na i nastavime 1
+        #pro kazdy znak na pozici i a pro kazde X urcujici znak na i nastavime +1
         self.init_phase(word)
-        n = len(self.word)
+        n = word_size
         for l in range(2, n + 1):
             print(f'Processing length of substring {l}')
             for s in range(0, n - l + 1): #kolik podretezcu o velikost len_subs se vleze do procesu radku
@@ -73,6 +103,9 @@ class Cyk():
                             for parent in parents:
                                 self.T[l-1, s, self.X2index[parent]] += productValue
             self.print_T_row(l - 1)
+
+
+
         print('\n\nFinished wtih result')
         number_of_trees = self.T[n-1,0,self.X2index[ASSUMED_STARTING_SYMBOL]]
         print(f'Number of trees {number_of_trees}') 

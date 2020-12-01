@@ -5,8 +5,6 @@ class Grammar():
     def __init__(self, filename):
         self.rightside2left = defaultdict(list)
         self.leftside2right = defaultdict(list)
-       
-
 
 
         for line in open(filename):
